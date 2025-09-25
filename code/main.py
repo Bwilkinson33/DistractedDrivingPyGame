@@ -8,7 +8,7 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self, groups):
         super().__init__(groups)
-        self.image = pygame.image.load(join('images', 'player.png')).convert_alpha()
+        self.image = pygame.image.load(join('..', 'images', 'player.png')).convert_alpha()
         self.rect = self.image.get_rect(center = (200, WINDOW_HEIGHT / 2))
         self.direction = pygame.Vector2()
         self.speed = 300
@@ -150,11 +150,11 @@ bottom_lane = WINDOW_HEIGHT / 2 + 200
 lane_list = [top_lane, middle_lane, bottom_lane]
 
 # Imports
-car_surf = pygame.image.load(join('images', 'car.png')).convert_alpha()
-honk_surf = pygame.image.load(join('images', 'honk.png')).convert_alpha()
-explosion_frames = [pygame.image.load(join('images', 'explosion', f'{i}.png')).convert_alpha() for i in range(21)]
+car_surf = pygame.image.load(join('..', 'images', 'car.png')).convert_alpha()
+honk_surf = pygame.image.load(join('..', 'images', 'honk.png')).convert_alpha()
+explosion_frames = [pygame.image.load(join('..', 'images', 'explosion', f'{i}.png')).convert_alpha() for i in range(21)]
 
-font = pygame.font.Font(join('images', 'Roboto-Regular.ttf'), 50)
+font = pygame.font.Font(join('..', 'images', 'Roboto-Regular.ttf'), 50)
 font.set_bold(True)
 
 # Audio has been disabled due to a problem with the audio system in the environment.
