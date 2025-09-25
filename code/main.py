@@ -9,7 +9,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, groups):
         super().__init__(groups)
         self.image = pygame.image.load(join('images', 'player.png')).convert_alpha()
-        self.rect = self.image.get_frect(center = (200, WINDOW_HEIGHT / 2))
+        self.rect = self.image.get_rect(center = (200, WINDOW_HEIGHT / 2))
         self.direction = pygame.Vector2()
         self.speed = 300
 
@@ -43,24 +43,6 @@ class Player(pygame.sprite.Sprite):
             self.kill()
             running = False
 
-
-        recent_keys = pygame.key.get_just_pressed()
-        if recent_keys[pygame.K_SPACE] and self.can_honk:
-            Horn(honk_surf, self.rect.center, (all_sprites, honk_sprites))
-            self.can_honk = False
-            self.horn_honk_time = pygame.time.get_ticks()
-            honk_sound_1.play()
-
-        if recent_keys[pygame.K_DOWN] and self.can_shift:
-            self.direction.y = 1
-            self.can_shift = False
-            self.lane_shift_time = pygame.time.get_ticks()
-
-        if recent_keys[pygame.K_UP] and self.can_shift:
-            self.direction.y = -1
-            self.can_shift = False
-            self.lane_shift_time = pygame.time.get_ticks()
-
         self.horn_timer()
         self.shift_timer()
 
@@ -69,7 +51,7 @@ class Car(pygame.sprite.Sprite):
         super().__init__(groups)
         self.original_surf = surf
         self.image = surf
-        self.rect = self.image.get_frect(center = pos)
+        self.rect = self.image.get_rect(center = pos)
         self.direction = pygame.Vector2(-1,0)
         self.speed = choice([250, 300, 350])
         self.dangerous = False
@@ -83,14 +65,14 @@ class Car(pygame.sprite.Sprite):
 
         self.rotation += self.rotation_speed * dt
         self.image = pygame.transform.rotozoom(self.original_surf, self.rotation, 1)
-        self.rect = self.image.get_frect(center = self.rect.center)
+        self.rect = self.image.get_rect(center = self.rect.center)
 
 class Horn(pygame.sprite.Sprite):
     def __init__(self, surf, pos, groups):
         super().__init__(groups)
         self.original_surf = surf
         self.image = surf
-        self.rect = self.image.get_frect(center = pos)
+        self.rect = self.image.get_rect(center = pos)
         self.direction = pygame.Vector2(1,0)
         self.speed = 400
         self.rotation_speed = -400
@@ -103,7 +85,7 @@ class Horn(pygame.sprite.Sprite):
 
         self.rotation += self.rotation_speed * dt
         self.image = pygame.transform.rotozoom(self.original_surf, self.rotation, 1)
-        self.rect = self.image.get_frect(center = self.rect.center)
+        self.rect = self.image.get_rect(center = self.rect.center)
 
 class AnimatedExplosion(pygame.sprite.Sprite):
     def __init__(self, frames, pos, groups):
@@ -111,7 +93,7 @@ class AnimatedExplosion(pygame.sprite.Sprite):
         self.frames = [pygame.transform.scale(frame, (frame.get_width() * 2, frame.get_height() * 2)) for frame in frames]
         self.frame_index = 0
         self.image = self.frames[self.frame_index]
-        self.rect = self.image.get_frect(center=pos)
+        self.rect = self.image.get_rect(center=pos)
 
     def update(self, dt):
         self.frame_index += 100 * dt
@@ -149,7 +131,7 @@ def collisions():
 def display_score():
     current_time = pygame.time.get_ticks() // 3000
     text_surf = font.render('Miles Driven: ' + str(current_time), True, ('White'))
-    text_rect = text_surf.get_frect(midbottom = (WINDOW_WIDTH / 2, WINDOW_HEIGHT - 50))
+    text_rect = text_surf.get_rect(midbottom = (WINDOW_WIDTH / 2, WINDOW_HEIGHT - 50))
     display_surface.blit(text_surf, text_rect)
     pygame.draw.rect(display_surface, 'White', text_rect.inflate(20, 10), 5, 10)
 
@@ -175,16 +157,18 @@ explosion_frames = [pygame.image.load(join('images', 'explosion', f'{i}.png')).c
 font = pygame.font.Font(join('images', 'Roboto-Regular.ttf'), 50)
 font.set_bold(True)
 
-honk_sound_1 = pygame.mixer.Sound(join('Audio', 'honk_sound_1.mp3'))
-honk_sound_1.set_volume(0.5)
-honk_sound_2 = pygame.mixer.Sound(join('Audio', 'honk_sound_2.mp3'))
-honk_sound_2.set_volume(0.5)
-game_music = pygame.mixer.Sound(join('Audio', 'game_music.mp3'))
-game_music.set_volume(0.2)
-game_music.play(loops = -1)
-traffic_music = pygame.mixer.Sound(join('Audio', 'traffic_music.mp3'))
-traffic_music.set_volume(0.5)
-traffic_music.play(loops = -1)
+# Audio has been disabled due to a problem with the audio system in the environment.
+# This was causing the game to crash on startup.
+# honk_sound_1 = pygame.mixer.Sound(join('Audio', 'honk_sound_1.mp3'))
+# honk_sound_1.set_volume(0.5)
+# honk_sound_2 = pygame.mixer.Sound(join('Audio', 'honk_sound_2.mp3'))
+# honk_sound_2.set_volume(0.5)
+# game_music = pygame.mixer.Sound(join('Audio', 'game_music.mp3'))
+# game_music.set_volume(0.2)
+# game_music.play(loops = -1)
+# traffic_music = pygame.mixer.Sound(join('Audio', 'traffic_music.mp3'))
+# traffic_music.set_volume(0.5)
+# traffic_music.play(loops = -1)
 
 # Sprites
 honk_sprites = pygame.sprite.Group()
@@ -207,6 +191,20 @@ while running:
         if event.type == car_event:
             x, y = WINDOW_WIDTH + 50, random.choice(lane_list)
             Car(car_surf, (x,y), (all_sprites, car_sprites))
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE and player.can_honk:
+                Horn(honk_surf, player.rect.center, (all_sprites, honk_sprites))
+                player.can_honk = False
+                player.horn_honk_time = pygame.time.get_ticks()
+                # honk_sound_1.play()
+            if event.key == pygame.K_DOWN and player.can_shift:
+                player.direction.y = 1
+                player.can_shift = False
+                player.lane_shift_time = pygame.time.get_ticks()
+            if event.key == pygame.K_UP and player.can_shift:
+                player.direction.y = -1
+                player.can_shift = False
+                player.lane_shift_time = pygame.time.get_ticks()
 
     all_sprites.update(dt)
     collisions()
