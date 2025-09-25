@@ -6,7 +6,7 @@ This is a simple game built with Pygame where you control a car and must avoid o
 
 - **Up Arrow:** Move up a lane.
 - **Down Arrow:** Move down a lane.
-- **Spacebar:** Honk your horn to make other cars change lanes.
+- **Spacebar:** Honk your horn to knock other cars out of your path.
 
 ## Setup and Installation
 
